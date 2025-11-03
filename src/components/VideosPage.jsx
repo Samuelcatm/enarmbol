@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, doc, getDoc } from '@/services/firebase';
+import { db, collection, getDocs, query, doc, getDoc } from '@/services/firebase';  // ← CAMBIO AQUÍ: Todo desde proxy (quita 'firebase/firestore')
 import { PlayCircle } from 'lucide-react';
 
 export default function VideosPage({ plan }) {
@@ -15,7 +15,6 @@ export default function VideosPage({ plan }) {
       navigate('/');
       return;
     }
-
     const checkAndFetch = async () => {
       try {
         const userDocRef = doc(db, 'users', user.uid);
@@ -24,17 +23,15 @@ export default function VideosPage({ plan }) {
           navigate('/');
           return;
         }
-
         const videoQuery = query(collection(db, 'videos'));
         const snapshot = await getDocs(videoQuery);
         setVideos(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) {
-        console.error('Error videos:', err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     checkAndFetch();
   }, [user, navigate, plan]);
 
@@ -43,12 +40,8 @@ export default function VideosPage({ plan }) {
   return (
     <div className={`min-h-screen p-8 ${plan === 'oro' ? 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-100'}`}>
       <div className="max-w-4xl mx-auto">
-        <button onClick={() => navigate(-1)} className="mb-8 text-xl font-bold flex items-center gap-2 hover:underline">
-          ← Volver al Dashboard
-        </button>
-        <h1 className={`text-5xl font-black mb-10 text-center ${plan === 'oro' ? 'text-yellow-700' : 'text-purple-700'}`}>
-          VIDEOS EXCLUSIVOS (Acumulativos Diarios)
-        </h1>
+        <button onClick={() => navigate(-1)} className="mb-8 text-xl font-bold flex items-center gap-2 hover:underline">← Volver al Dashboard</button>
+        <h1 className={`text-5xl font-black mb-10 text-center ${plan === 'oro' ? 'text-yellow-700' : 'text-purple-700'}`}>VIDEOS EXCLUSIVOS (Acumulativos Diarios)</h1>
         {videos.length === 0 ? (
           <p className="text-center text-gray-600 text-xl">No hay videos subidos aún. ¡Nuevo diario mañana!</p>
         ) : (
@@ -63,10 +56,7 @@ export default function VideosPage({ plan }) {
                       <p className="text-md text-gray-600">Rumble unlisted • Diario acumulativo</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => window.open(video.url, '_blank')}
-                    className={`font-bold px-8 py-4 rounded-xl text-lg transition-all flex items-center gap-3 shadow-lg ${plan === 'oro' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}
-                  >
+                  <button onClick={() => window.open(video.url, '_blank')} className={`font-bold px-8 py-4 rounded-xl text-lg transition-all flex items-center gap-3 shadow-lg ${plan === 'oro' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
                     <PlayCircle className="w-8 h-8" />
                     Ver Video
                   </button>

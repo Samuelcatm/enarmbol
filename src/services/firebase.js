@@ -1,5 +1,5 @@
 // src/services/firebase.js
-// → Proxy limpio que VideosPage ya conoce
+// Proxy que re-exporta TODO desde '@/firebase' (tu config real)
 export {
   db,
   collection,

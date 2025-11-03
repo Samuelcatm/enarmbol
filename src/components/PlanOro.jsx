@@ -46,8 +46,6 @@ export default function PlanOro() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <div className="flex items-center gap-6">
             <img src={LogoOro} alt="Logo Oro" className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-2xl animate-pulse" />
@@ -63,33 +61,21 @@ export default function PlanOro() {
             Cerrar Sesión
           </button>
         </div>
-
-        {/* BIENVENID@ */}
         <div className="text-center mb-16">
           <p className="text-3xl text-gray-700">¡Bienvenid@, <span className="font-bold text-yellow-700">{user?.email}</span>!</p>
         </div>
-
-        {/* ÍCONOS GRANDES */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
-          <div
-            onClick={() => navigate('/plan-oro/videos')}
-            className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group"
-          >
+          <div onClick={() => navigate('/plan-oro/videos')} className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
             <PlayCircle className="w-40 h-40 mx-auto text-yellow-600 mb-8 drop-shadow-2xl group-hover:animate-pulse" />
             <h2 className="text-5xl font-black text-yellow-700">VIDEOS EXCLUSIVOS</h2>
             <p className="text-xl text-gray-600 mt-4">Click → Lista acumulativa diaria</p>
           </div>
-
-          <div
-            onClick={() => navigate('/plan-oro/quizzes')}
-            className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group"
-          >
+          <div onClick={() => navigate('/plan-oro/quizzes')} className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
             <BookOpen className="w-40 h-40 mx-auto text-yellow-600 mb-8 drop-shadow-2xl group-hover:animate-pulse" />
             <h2 className="text-5xl font-black text-yellow-700">QUIZZES EXCLUSIVOS</h2>
             <p className="text-xl text-gray-600 mt-4">Click → Lista acumulativa diaria</p>
           </div>
         </div>
-
       </div>
     </div>
   );
