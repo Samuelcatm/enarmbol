@@ -1,6 +1,6 @@
 ﻿// src/pages/Home.jsx
 import { useState, useEffect, useRef } from 'react';
-import { useAppNavigate } from '@/context/NavigateContext';
+import { useAppNavigate } from '@/context/NavigateContext';  // ← YA LO TENÍAS
 import heroBg from '../assets/images/hero-bg.png';
 import tiktokIcon from '../assets/icons/tiktok.png';
 import facebookIcon from '../assets/icons/facebook.png';
@@ -10,40 +10,34 @@ import whatsappIcon from '../assets/icons/whatsapp.png';
 import logoEnarmbol from '../assets/icons/logo-enarmbol.png';
 
 const Navbar = () => {
+  const navigate = useAppNavigate();  // ← USA EL HOOK AQUÍ (client-side)
   const [isVisible, setIsVisible] = useState(true);
   const timeoutRef = useRef(null);
-
   const menuItems = [
-    { icon: 'Usuario', to: '/login' },
+    { icon: 'Usuario', to: '/login' },  // ← MISMO PATH
     { icon: 'Planes', to: '#planes' },
     { icon: 'Especialidades', to: '#especialidades' },
     { icon: 'Contacto', to: '#contacto' },
   ];
-
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
-
   const handleMouseMove = () => {
     setIsVisible(true);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => setIsVisible(false), 10000);
   };
-
   useEffect(() => {
     const initial = setTimeout(() => setIsVisible(false), 10000);
     timeoutRef.current = initial;
-
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchstart', handleMouseMove);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchstart', handleMouseMove);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
-
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ background: 'rgba(30, 64, 175, 0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)' }}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -53,7 +47,7 @@ const Navbar = () => {
         </div>
         <div className="bg-white/25 backdrop-blur-sm rounded-xl shadow-md p-2 flex gap-2">
           {menuItems.map((item, i) => (
-            <button key={i} onClick={() => item.to.startsWith('#') ? scrollTo(item.to.slice(1)) : (window.location.href = item.to)} className="px-4 py-2 rounded-lg hover:bg-white/40 hover:shadow-sm transition-all text-white font-medium text-sm">
+            <button key={i} onClick={() => item.to.startsWith('#') ? scrollTo(item.to.slice(1)) : navigate(item.to)} className="px-4 py-2 rounded-lg hover:bg-white/40 hover:shadow-sm transition-all text-white font-medium text-sm">
               {item.icon}
             </button>
           ))}
