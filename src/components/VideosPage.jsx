@@ -1,9 +1,7 @@
-// src/components/VideosPage.jsx
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, doc, getDoc } from 'firebase/firestore';
-import { db } from '@/services/firebase';
+import { collection, getDocs, query, doc, getDoc } from '@/services/firebase';
 import { PlayCircle } from 'lucide-react';
 
 export default function VideosPage({ plan }) {

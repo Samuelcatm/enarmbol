@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword 
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '@/services/firebase';
+import { auth, googleProvider, db } from '@/firebase';  // RUTA CORRECTA: '@/firebase'
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -42,7 +42,8 @@ export function AuthProvider({ children }) {
       await signInWithPopup(auth, googleProvider);
       toast.success('¡Bienvenido con Google!');
     } catch (error) {
-      toast.error('Error con Google');
+      console.error('ERROR GOOGLE CONTEXT:', error);
+      toast.error('Error con Google: ' + error.message);
     }
   };
 
@@ -66,7 +67,7 @@ export function AuthProvider({ children }) {
       });
       toast.success('¡Cuenta creada!');
     } catch (error) {
-      toast.error('Error al registrarse');
+      toast.error('Error al registrarse: ' + error.message);
       throw error;
     }
   };
@@ -98,5 +99,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-// ESTO ES LO QUE FALTABA
 export const useAuth = () => useContext(AuthContext);

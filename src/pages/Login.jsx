@@ -4,13 +4,16 @@ import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
 import { Eye, EyeOff } from 'lucide-react';
+import { auth, googleProvider, db } from '@/firebase';  // IMPORTA DIRECTO, NO signInWithPopup AQUÍ
+import { signInWithPopup } from 'firebase/auth';  // Solo función
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
-  const { user, plan, loginWithEmail, registerWithEmail, assignPlan, loginWithGoogle, loading } = useAuth();
+  const { user, plan, loginWithEmail, registerWithEmail, assignPlan, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,12 +30,37 @@ export default function Login() {
         await registerWithEmail(email, password);
       } else {
         await loginWithEmail(email, password);
-        // Testing plans
         if (email.includes('oro')) await assignPlan('oro');
         if (email.includes('diamante')) await assignPlan('diamante');
       }
     } catch (error) {
-      // Error en context
+      toast.error(error.message || 'Error en autenticación');
+    }
+  };
+
+  const handleGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log('LOGIN GOOGLE OK:', user.uid, user.email);
+
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        plan: 'oro',
+        createdAt: new Date()
+      }, { merge: true });
+
+      toast.success('¡Login con Google exitoso!');
+    } catch (error) {
+      console.error('ERROR GOOGLE:', error.code, error.message);
+      if (error.code === 'auth/popup-blocked') {
+        toast.error('Popup bloqueado: Permite popups para localhost');
+      } else {
+        toast.error(error.message || 'Error con Google');
+      }
     }
   };
 
@@ -42,7 +70,7 @@ export default function Login() {
         <h1 className="text-4xl font-bold text-center text-indigo-700 mb-10">ENARMBOL</h1>
 
         <button
-          onClick={loginWithGoogle}
+          onClick={handleGoogle}
           disabled={loading}
           className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-md mb-6 disabled:opacity-50"
         >
@@ -93,16 +121,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center mt-6 text-gray-600">
-          {isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
-          <button
-            type="button"
-            onClick={() => setIsRegister(!isRegister)}
-            className="text-indigo-600 font-bold hover:underline"
-          >
-            {isRegister ? 'Inicia sesión' : 'Regístrate'}
-          </button>
-        </p>
+        {/* Registro text borrado */}
       </div>
     </div>
   );

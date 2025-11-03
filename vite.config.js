@@ -1,32 +1,26 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), mkcert()],  // AGREGA mkcert() PARA HTTPS TRUSTED
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),  // ← YA LO TENÍAS, PERFECTO
+      '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['firebase']
+  },
   build: {
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'firebase'],
-          ui: ['lucide-react', 'react-hot-toast']
-        }
-      }
+    commonjsOptions: {
+      exclude: ['firebase']
     }
   },
   server: {
-    watch: {
-      usePolling: false,
-    },
-    hmr: {
-      overlay: false, // Quita el overlay molesto
-    }
+    https: true,  // FUERZA HTTPS DEV TRUSTED
+    host: true,   // EXPOSE localhost:5173
+    port: 5173
   }
 });
