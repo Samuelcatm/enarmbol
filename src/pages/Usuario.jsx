@@ -1,77 +1,46 @@
-// src/pages/Usuario.jsx
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PlanOro from '@/components/PlanOro';
 import PlanDiamante from '@/components/PlanDiamante';
+import Login from './Login'; // Reuse Login si quieres form
 
 export default function Usuario() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { user, plan, loading, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const { user, plan, loginWithEmail, logout } = useAuth();
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await loginWithEmail(email, password);
-    } catch (error) {
-      // Error ya mostrado
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!loading && user && plan) {
+      if (plan === 'oro') navigate('/plan-oro');
+      if (plan === 'diamante') navigate('/plan-diamante');
     }
-  };
+  }, [user, plan, loading, navigate]);
 
   const handleLogout = async () => {
     await logout();
+    navigate('/login');
   };
 
-  // MOSTRAR PLAN
-  if (user && plan === 'oro') {
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>;
+  }
+
+  if (!user) {
+    return <Login />; // Muestra Login si no autenticado
+  }
+
+  if (plan === 'oro') {
     return <PlanOro onLogout={handleLogout} />;
   }
-  if (user && plan === 'diamante') {
+  if (plan === 'diamante') {
     return <PlanDiamante onLogout={handleLogout} />;
   }
 
-  // FORMULARIO DE LOGIN
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md">
-        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-10">ENARMBOL</h1>
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="user1@example.com"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="password123"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
-              loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
-            } text-white`}
-          >
-            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
-          </button>
-        </form>
-
-        <p className="text-center mt-6 text-sm text-gray-600">
-          ¿No tienes acceso? Contacta al administrador.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="bg-white p-10 rounded-3xl shadow-2xl text-center">
+        <p className="text-3xl font-bold text-indigo-700">Cargando plan...</p>
+        <button onClick={handleLogout} className="mt-6 bg-red-600 text-white px-8 py-3 rounded-xl">Cerrar Sesión</button>
       </div>
     </div>
   );

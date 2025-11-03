@@ -1,41 +1,38 @@
-﻿// src/pages/Login.jsx
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
-import { Eye, EyeOff } from 'lucide-react';  // OJITO IMPORT
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);  // TOGGLE OJITO
+  const [showPassword, setShowPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
-  const { user, plan, loginWithEmail, registerWithEmail, assignPlan, loginWithGoogle } = useAuth();
+  const { user, plan, loginWithEmail, registerWithEmail, assignPlan, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirige automáticamente
   useEffect(() => {
-    if (user && plan) {
+    if (user && plan && !loading) {
       if (plan === 'oro') navigate('/plan-oro');
       if (plan === 'diamante') navigate('/plan-diamante');
     }
-  }, [user, plan, navigate]);
+  }, [user, plan, navigate, loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isRegister) {
         await registerWithEmail(email, password);
-        toast.success('¡Cuenta creada!');
       } else {
         await loginWithEmail(email, password);
-        // Testing: asignar plan por email
-        if (email === 'user1@example.com') await assignPlan('oro');
-        if (email === 'user2@example.com') await assignPlan('diamante');
+        // Testing plans
+        if (email.includes('oro')) await assignPlan('oro');
+        if (email.includes('diamante')) await assignPlan('diamante');
       }
     } catch (error) {
-      toast.error('Credenciales inválidas');
+      // Error en context
     }
   };
 
@@ -46,7 +43,8 @@ export default function Login() {
 
         <button
           onClick={loginWithGoogle}
-          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-md mb-6"
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-md mb-6 disabled:opacity-50"
         >
           <FcGoogle className="text-2xl" />
           Continuar con Google
@@ -67,7 +65,6 @@ export default function Login() {
             />
           </div>
 
-          {/* CONTRASEÑA CON OJITO */}
           <div className="relative">
             <label className="block text-sm font-bold text-gray-700 mb-2">Contraseña</label>
             <input
@@ -81,7 +78,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 pt-8 text-gray-600 hover:text-indigo-700 transition"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 pt-8 text-gray-600 hover:text-indigo-700"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -89,9 +86,10 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 disabled:opacity-50"
           >
-            {isRegister ? 'Registrarse' : 'Iniciar Sesión'}
+            {loading ? 'Procesando...' : (isRegister ? 'Registrarse' : 'Iniciar Sesión')}
           </button>
         </form>
 
