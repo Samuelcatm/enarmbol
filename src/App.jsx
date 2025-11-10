@@ -10,24 +10,33 @@ const PlanOro = lazy(() => import('./components/PlanOro.jsx'));
 const PlanDiamante = lazy(() => import('./components/PlanDiamante.jsx'));
 const VideosPage = lazy(() => import('./components/VideosPage.jsx'));
 const QuizzesPage = lazy(() => import('./components/QuizzesPage.jsx'));
+const ResumenesPage = lazy(() => import('./components/ResumenesPage.jsx')); // NUEVO
 
 function App() {
   return (
     <NavigateProvider>
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>}>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600"></div>
+        </div>
+      }>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/usuario" element={<Usuario />} />
           
+          {/* PLAN ORO */}
           <Route path="/plan-oro" element={<PlanOro />} />
           <Route path="/plan-oro/videos" element={<VideosPage plan="oro" />} />
           <Route path="/plan-oro/quizzes" element={<QuizzesPage plan="oro" />} />
-          
+          <Route path="/plan-oro/resumenes" element={<ResumenesPage plan="oro" />} /> {/* NUEVO */}
+
+          {/* PLAN DIAMANTE */}
           <Route path="/plan-diamante" element={<PlanDiamante />} />
           <Route path="/plan-diamante/videos" element={<VideosPage plan="diamante" />} />
           <Route path="/plan-diamante/quizzes" element={<QuizzesPage plan="diamante" />} />
-          
+          <Route path="/plan-diamante/resumenes" element={<ResumenesPage plan="diamante" />} /> {/* NUEVO */}
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Suspense>

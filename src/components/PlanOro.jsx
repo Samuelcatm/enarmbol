@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/services/firebase';
-import { PlayCircle, BookOpen } from 'lucide-react';
+import { PlayCircle, BookOpen, FileText } from 'lucide-react';
 import LogoOro from '@/assets/images/logo-oro.png';
 
 export default function PlanOro() {
@@ -64,16 +64,28 @@ export default function PlanOro() {
         <div className="text-center mb-16">
           <p className="text-3xl text-gray-700">¡Bienvenid@, <span className="font-bold text-yellow-700">{user?.email}</span>!</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
-          <div onClick={() => navigate('/plan-oro/videos')} className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
-            <PlayCircle className="w-40 h-40 mx-auto text-yellow-600 mb-8 drop-shadow-2xl group-hover:animate-pulse" />
-            <h2 className="text-5xl font-black text-yellow-700">VIDEOS EXCLUSIVOS</h2>
-            <p className="text-xl text-gray-600 mt-4">Click → Lista acumulativa diaria</p>
+
+        {/* GRID CON 3 BOTONES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+          {/* VIDEOS */}
+          <div onClick={() => navigate('/plan-oro/videos')} className="cursor-pointer bg-white p-10 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
+            <PlayCircle className="w-32 h-32 mx-auto text-yellow-600 mb-6 drop-shadow-2xl group-hover:animate-pulse" />
+            <h2 className="text-4xl font-black text-yellow-700">VIDEOS</h2>
+            <p className="text-lg text-gray-600 mt-2">Lista acumulativa diaria</p>
           </div>
-          <div onClick={() => navigate('/plan-oro/quizzes')} className="cursor-pointer bg-white p-12 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
-            <BookOpen className="w-40 h-40 mx-auto text-yellow-600 mb-8 drop-shadow-2xl group-hover:animate-pulse" />
-            <h2 className="text-5xl font-black text-yellow-700">QUIZZES EXCLUSIVOS</h2>
-            <p className="text-xl text-gray-600 mt-4">Click → Lista acumulativa diaria</p>
+
+          {/* QUIZZES */}
+          <div onClick={() => navigate('/plan-oro/quizzes')} className="cursor-pointer bg-white p-10 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
+            <BookOpen className="w-32 h-32 mx-auto text-yellow-600 mb-6 drop-shadow-2xl group-hover:animate-pulse" />
+            <h2 className="text-4xl font-black text-yellow-700">QUIZZES</h2>
+            <p className="text-lg text-gray-600 mt-2">Lista acumulativa diaria</p>
+          </div>
+
+          {/* RESÚMENES NUEVO */}
+          <div onClick={() => navigate('/plan-oro/resumenes')} className="cursor-pointer bg-white p-10 rounded-3xl shadow-2xl hover:shadow-4xl transition-all duration-500 transform hover:scale-110 text-center group">
+            <FileText className="w-32 h-32 mx-auto text-green-600 mb-6 drop-shadow-2xl group-hover:animate-pulse" />
+            <h2 className="text-4xl font-black text-green-700">RESÚMENES</h2>
+            <p className="text-lg text-gray-600 mt-2">PDFs + Mapas mentales</p>
           </div>
         </div>
       </div>
