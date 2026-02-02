@@ -1,6 +1,6 @@
 ﻿// src/pages/Home.jsx
 import { useState, useEffect, useRef } from 'react';
-import { useAppNavigate } from '@/context/NavigateContext';  // ← YA LO TENÍAS
+import { useAppNavigate } from '@/context/NavigateContext';
 import heroBg from '../assets/images/hero-bg.png';
 import tiktokIcon from '../assets/icons/tiktok.png';
 import facebookIcon from '../assets/icons/facebook.png';
@@ -10,34 +10,40 @@ import whatsappIcon from '../assets/icons/whatsapp.png';
 import logoEnarmbol from '../assets/icons/logo-enarmbol.png';
 
 const Navbar = () => {
-  const navigate = useAppNavigate();  // ← USA EL HOOK AQUÍ (client-side)
   const [isVisible, setIsVisible] = useState(true);
   const timeoutRef = useRef(null);
+
   const menuItems = [
-    { icon: 'Usuario', to: '/login' },  // ← MISMO PATH
+    { icon: 'Usuario', to: '/login' },
     { icon: 'Planes', to: '#planes' },
     { icon: 'Especialidades', to: '#especialidades' },
     { icon: 'Contacto', to: '#contacto' },
   ];
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
+
   const handleMouseMove = () => {
     setIsVisible(true);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => setIsVisible(false), 10000);
   };
+
   useEffect(() => {
     const initial = setTimeout(() => setIsVisible(false), 10000);
     timeoutRef.current = initial;
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchstart', handleMouseMove);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchstart', handleMouseMove);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ background: 'rgba(30, 64, 175, 0.3)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)' }}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -47,14 +53,12 @@ const Navbar = () => {
         </div>
         <div className="bg-white/25 backdrop-blur-sm rounded-xl shadow-md p-2 flex gap-2">
           {menuItems.map((item, i) => (
-            <button key={i} onClick={() => item.to.startsWith('#') ? scrollTo(item.to.slice(1)) : navigate(item.to)} className="px-4 py-2 rounded-lg hover:bg-white/40 hover:shadow-sm transition-all text-white font-medium text-sm">
+            <button key={i} onClick={() => item.to.startsWith('#') ? scrollTo(item.to.slice(1)) : (window.location.href = item.to)} className="px-4 py-2 rounded-lg hover:bg-white/40 hover:shadow-sm transition-all text-white font-medium text-sm">
               {item.icon}
             </button>
           ))}
           <a href="https://wa.me/59173574001" target="_blank" rel="noopener noreferrer" className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-sm">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-            </svg>
+            <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5" />
           </a>
         </div>
       </div>
@@ -212,6 +216,21 @@ const Planes = () => {
       ],
       inicio: 'Lunes 3 de noviembre',
     },
+    {
+      nombre: 'MEGASIMULACROS 1800',
+      precio: '50 Bs',
+      color: 'border-purple-700',
+      bg: 'bg-purple-50',
+      popular: true,
+      beneficios: [
+        '1800 preguntas para el examen de Residencia Médica Bolivia 2026',
+        'Todo lo que debes saber respecto a la nueva bibliografía',
+        '36 simulacros completos de 50 preguntas cada uno',
+        'Preguntas tipo ENARM con explicaciones detalladas',
+        'Acceso inmediato e ilimitado',
+      ],
+      inicio: 'Acceso inmediato',
+    },
   ];
 
   const redes = [
@@ -230,11 +249,11 @@ const Planes = () => {
           <p className="text-xl text-gray-600 mb-6"><strong className="text-green-600">¡INICIO: LUNES 3 DE NOVIEMBRE!</strong></p>
           <p className="text-lg text-red-600 font-bold">PROMOCIÓN VÁLIDA HASTA EL DOMINGO 2 DE NOVIEMBRE 2025</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
           {planes.map((plan) => (
             <div key={plan.nombre} className={`relative border-4 ${plan.color} rounded-3xl p-8 text-center transition-all hover:shadow-2xl hover:scale-105 ${plan.bg} flex flex-col justify-between`}>
               {plan.ilimitado && <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-cyan-500 text-white px-6 py-1 rounded-full text-sm font-bold shadow-lg">ILIMITADO</div>}
-              {plan.popular && <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-1 rounded-full text-sm font-bold shadow-lg">CUPOS LIMITADOS</div>}
+              {plan.popular && <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-1 rounded-full text-sm font-bold shadow-lg">RECOMENDADO</div>}
               <div>
                 <h4 className="text-3xl font-extrabold text-gray-800 mb-4">{plan.nombre}</h4>
                 <div className="mb-6">

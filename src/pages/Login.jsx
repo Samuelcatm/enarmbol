@@ -16,7 +16,8 @@ export default function Login() {
   useEffect(() => {
     if (user && plan) {
       if (plan === 'oro') navigate('/plan-oro');
-      if (plan === 'diamante') navigate('/plan-diamante');
+      else if (plan === 'diamante') navigate('/plan-diamante');
+      else if (plan === 'megasimulacros') navigate('/plan-megasimulacros'); // ← NUEVA LÍNEA
     }
   }, [user, plan, navigate]);
 

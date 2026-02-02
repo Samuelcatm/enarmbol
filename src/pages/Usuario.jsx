@@ -1,8 +1,10 @@
+// src/pages/Usuario.jsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PlanOro from '@/components/PlanOro';
 import PlanDiamante from '@/components/PlanDiamante';
+import PlanMegasimulacros from '@/components/PlanMegasimulacros'; // ← NUEVO
 
 export default function Usuario() {
   const { user, plan, loading } = useAuth();
@@ -14,6 +16,8 @@ export default function Usuario() {
         navigate('/plan-oro', { replace: true });
       } else if (plan === 'diamante') {
         navigate('/plan-diamante', { replace: true });
+      } else if (plan === 'megasimulacros') {
+        navigate('/plan-megasimulacros', { replace: true }); // ← NUEVA LÍNEA
       }
     }
   }, [user, plan, loading, navigate]);
@@ -34,6 +38,16 @@ export default function Usuario() {
   }
 
   // Renderiza según el plan
-  return plan === 'oro' ? <PlanOro /> : <PlanDiamante />;
-}
+  if (plan === 'oro') return <PlanOro />;
+  if (plan === 'diamante') return <PlanDiamante />;
+  if (plan === 'megasimulacros') return <PlanMegasimulacros />;
 
+  // Si no tiene plan válido
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-red-50">
+      <div className="text-2xl font-bold text-red-700">
+        No tienes un plan activo. Contacta al soporte.
+      </div>
+    </div>
+  );
+}
