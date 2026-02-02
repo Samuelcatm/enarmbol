@@ -9,23 +9,30 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { user, plan, loginWithEmail } = useAuth();
+  const { user, plan, loading, loginWithEmail } = useAuth();  // ← agregamos loading
   const navigate = useNavigate();
 
-  // Redirect si ya está logueado
   useEffect(() => {
-    if (user && plan) {
-      if (plan === 'oro') navigate('/plan-oro');
-      else if (plan === 'diamante') navigate('/plan-diamante');
-      else if (plan === 'megasimulacros') navigate('/plan-megasimulacros'); // ← NUEVA LÍNEA
+    if (!loading && user && plan) {
+      console.log('Redirigiendo desde Login - plan:', plan);
+      if (plan === 'oro') {
+        navigate('/plan-oro', { replace: true });
+      } else if (plan === 'diamante') {
+        navigate('/plan-diamante', { replace: true });
+      } else if (plan === 'megasimulacros') {
+        navigate('/plan-megasimulacros', { replace: true });
+      } else {
+        navigate('/usuario', { replace: true }); // fallback
+      }
     }
-  }, [user, plan, navigate]);
+  }, [user, plan, loading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await loginWithEmail(email, password);
       toast.success('¡Bienvenido a ENARMBOL!');
+      // No necesitas navigate aquí porque el useEffect lo hace
     } catch (error) {
       toast.error('Correo o contraseña incorrectos');
     }

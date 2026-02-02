@@ -8,7 +8,7 @@ import {
   createUserWithEmailAndPassword 
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '@/firebase';  // RUTA CORRECTA: '@/firebase'
+import { auth, googleProvider, db } from '@/firebase';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -18,22 +18,40 @@ export function AuthProvider({ children }) {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const loadUserPlan = async (uid) => {
+    try {
+      const userRef = doc(db, 'users', uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const userPlan = userDoc.data().plan;
+        console.log('Plan cargado desde Firestore:', userPlan);
+        setPlan(userPlan || null);
+      } else {
+        console.log('Documento de usuario no existe aún para UID:', uid);
+        setPlan(null);
+      }
+    } catch (err) {
+      console.error('Error al cargar plan:', err);
+      setPlan(null);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          setPlan(userDoc.data().plan);
-        } else {
-          await setDoc(doc(db, 'users', currentUser.uid), { plan: 'oro' });
-          setPlan('oro');
-        }
+        await loadUserPlan(currentUser.uid);
+        // Retry después de 1 segundo por si el documento se creó justo ahora
+        setTimeout(() => {
+          loadUserPlan(currentUser.uid);
+        }, 1000);
       } else {
         setPlan(null);
       }
       setLoading(false);
     });
+
     return unsubscribe;
   }, []);
 
@@ -42,8 +60,8 @@ export function AuthProvider({ children }) {
       await signInWithPopup(auth, googleProvider);
       toast.success('¡Bienvenido con Google!');
     } catch (error) {
-      console.error('ERROR GOOGLE CONTEXT:', error);
-      toast.error('Error con Google: ' + error.message);
+      console.error('ERROR GOOGLE:', error);
+      toast.error('Error al iniciar con Google');
     }
   };
 
@@ -57,15 +75,23 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const registerWithEmail = async (email, password) => {
+  const registerWithEmail = async (email, password, initialPlan = 'oro') => {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, 'users', cred.user.uid), {
+      const uid = cred.user.uid;
+
+      await setDoc(doc(db, 'users', uid), {
         email,
-        plan: 'oro',
+        plan: initialPlan,
         createdAt: new Date().toISOString()
       });
-      toast.success('¡Cuenta creada!');
+
+      // Forzar actualización inmediata
+      setPlan(initialPlan);
+      await loadUserPlan(uid);
+
+      toast.success('¡Cuenta creada con éxito!');
+      return true;
     } catch (error) {
       toast.error('Error al registrarse: ' + error.message);
       throw error;
@@ -73,26 +99,39 @@ export function AuthProvider({ children }) {
   };
 
   const assignPlan = async (newPlan) => {
-    if (!user) return;
+    if (!user?.uid) {
+      toast.error('Debes iniciar sesión primero');
+      return;
+    }
     try {
       await setDoc(doc(db, 'users', user.uid), { plan: newPlan }, { merge: true });
       setPlan(newPlan);
-      toast.success(`Plan ${newPlan} activado`);
+      toast.success(`Plan ${newPlan} activado correctamente`);
     } catch (error) {
-      toast.error('Error al cambiar plan');
+      console.error('Error al asignar plan:', error);
+      toast.error('No se pudo cambiar el plan');
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
-    toast.success('Sesión cerrada');
+    try {
+      await signOut(auth);
+      toast.success('Sesión cerrada');
+    } catch (error) {
+      toast.error('Error al cerrar sesión');
+    }
   };
 
   return (
     <AuthContext.Provider value={{
-      user, plan, loading,
-      loginWithGoogle, loginWithEmail, registerWithEmail,
-      assignPlan, logout
+      user,
+      plan,
+      loading,
+      loginWithGoogle,
+      loginWithEmail,
+      registerWithEmail,
+      assignPlan,
+      logout
     }}>
       {!loading && children}
     </AuthContext.Provider>
