@@ -62,7 +62,7 @@ export default function PlanMegasimulacros() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-12">
           <h1 className="text-4xl md:text-5xl font-black text-purple-800">
-            MEGASIMULACROS 1800
+            MEGASIMULACROS 2000
           </h1>
           <button 
             onClick={handleLogout}
